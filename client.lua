@@ -15,11 +15,23 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
         for _, interior in ipairs(interiors) do
-            local playerPos = GetEntityCoords(GetPlayerPed(-1))
-            if (GetDistanceBetweenCoords(playerPos.x, playerPos.y, playerPos.z, interior.entrance.x, interior.entrance.y, interior.entrance.z) < 15) then
+            local playerPos = GetEntityCoords(PlayerPedId())
+            if GetDistanceBetweenCoords(playerPos.x, playerPos.y, playerPos.z, interior.entrance.x, interior.entrance.y, interior.entrance.z) < 15 then
                 DrawMarker(1, interior.entrance.x, interior.entrance.y, interior.entrance.z - 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 255, 128, 0, 155, false, false, 2, nil, nil, false)
-                if (GetDistanceBetweenCoords(playerPos.x, playerPos.y, playerPos.z, interior.entrance.x, interior.entrance.y, interior.entrance.z) < 1) then
+                if GetDistanceBetweenCoords(playerPos.x, playerPos.y, playerPos.z, interior.entrance.x, interior.entrance.y, interior.entrance.z) < 1 then
                     showHelpPrompt(("Press ~INPUT_CONTEXT~  to enter %s"):format(interior.name))
+                    if IsControlJustPressed(0, 51) then
+                        SetEntityCoords(PlayerPedId(), interior.exit.x, interior.exit.y, interior.exit.z - 1, false, false, false, true)
+                    end
+                end
+            end
+            if GetDistanceBetweenCoords(playerPos.x, playerPos.y, playerPos.z, interior.exit.x, interior.exit.y, interior.exit.z) < 15 then
+                DrawMarker(1, interior.exit.x, interior.exit.y, interior.exit.z - 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 255, 128, 0, 155, false, false, 2, nil, nil, false)
+                if GetDistanceBetweenCoords(playerPos.x, playerPos.y, playerPos.z, interior.exit.x, interior.exit.y, interior.exit.z) < 1 then
+                    showHelpPrompt(("Press ~INPUT_CONTEXT~  to leave %s"):format(interior.name))
+                    if IsControlJustPressed(0, 51) then
+                        SetEntityCoords(PlayerPedId(), interior.entrance.x, interior.entrance.y, interior.entrance.z - 1, false, false, false, true)
+                    end
                 end
             end
         end
@@ -53,7 +65,7 @@ end, false)
 
 RegisterCommand('setexit', function(source, args)
     if creatingInterior then
-        createdInterior.exit = GetEntityCoords(GetPlayerPed(source))
+        createdInterior.exit = GetEntityCoords(PlayerPedId())
         showSubtitle('Type ~y~/setname [name]~s~ to set the name of the interior.', 60000)
     else
         showAlert("You aren't creating an interior.")
