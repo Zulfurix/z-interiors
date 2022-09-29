@@ -71,7 +71,7 @@ end, false)
 
 RegisterCommand('finishinterior', function(source, args)
     if creatingInterior then
-        if createdInterior.entrance ~= null then
+        if validateInterior(createdInterior) then
             TriggerEvent("Z-Interiors:UpdateInteriors", { 
                 createdInterior
             })
@@ -82,6 +82,20 @@ RegisterCommand('finishinterior', function(source, args)
         showAlert("You aren't creating an interior.")
     end
 end, false)
+
+function validateInterior(interior)
+    if interior.entrance == null then
+        showAlert("You haven't set the interior's entrance point.")
+        return false
+    elseif interior.exit == null then
+        showAlert("You haven't set the interior's exit point.")
+        return false
+    elseif interior.name == null then
+        showAlert("You haven't set the interior's name.")
+        return false
+    end
+    return true
+end
 
 function createInterior(interiorId, interiorOptions)
     if interiorOptions ~= null then
